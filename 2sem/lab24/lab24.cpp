@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <unordered_set>
+#include <list>
 
 using namespace std;
 
@@ -62,59 +64,60 @@ class Node {
 
 class GrammTree {
     Node *root;
+    unordered_set<int> commonFactors;
 
    public:
-    void insert(Node *root, Node *node) {
-        if (root->d <= node->d) {
-            if (root->getRight() == nullptr) {
-                root->setRight(node);
-            } else {
-                this->insert(root->getRight(), node);
-            }
-        }
-        if (root->d > node->d) {
-            if (root->getLeft() == nullptr) {
-                root->setLeft(node);
-            } else {
-                this->insert(root->getLeft(), node);
-            }
-        }
-    }
+    // void insert(Node *root, Node *node) {
+    //     if (root->d <= node->d) {
+    //         if (root->getRight() == nullptr) {
+    //             root->setRight(node);
+    //         } else {
+    //             this->insert(root->getRight(), node);
+    //         }
+    //     }
+    //     if (root->d > node->d) {
+    //         if (root->getLeft() == nullptr) {
+    //             root->setLeft(node);
+    //         } else {
+    //             this->insert(root->getLeft(), node);
+    //         }
+    //     }
+    // }
 
-    void insert(Node *node) {
-        if (this->root->d <= node->d) {
-            if (this->root->getRight() == nullptr) {
-                this->root->setRight(node);
-            } else {
-                this->insert(this->root->getRight(), node);
-            }
-        }
-        if (this->root->d > node->d) {
-            if (this->root->getLeft() == nullptr) {
-                this->root->setLeft(node);
-            } else {
-                this->insert(this->root->getLeft(), node);
-            }
-        }
-    }
+    // void insert(Node *node) {
+    //     if (this->root->d <= node->d) {
+    //         if (this->root->getRight() == nullptr) {
+    //             this->root->setRight(node);
+    //         } else {
+    //             this->insert(this->root->getRight(), node);
+    //         }
+    //     }
+    //     if (this->root->d > node->d) {
+    //         if (this->root->getLeft() == nullptr) {
+    //             this->root->setLeft(node);
+    //         } else {
+    //             this->insert(this->root->getLeft(), node);
+    //         }
+    //     }
+    // }
 
-    void insert(string d) {
-        Node *node = new Node(d);
-        if (this->root->d <= node->d) {
-            if (this->root->getRight() == nullptr) {
-                this->root->setRight(node);
-            } else {
-                this->insert(this->root->getRight(), node);
-            }
-        }
-        if (this->root->d > node->d) {
-            if (this->root->getLeft() == nullptr) {
-                this->root->setLeft(node);
-            } else {
-                this->insert(this->root->getLeft(), node);
-            }
-        }
-    }
+    // void insert(string d) {
+    //     Node *node = new Node(d);
+    //     if (this->root->d <= node->d) {
+    //         if (this->root->getRight() == nullptr) {
+    //             this->root->setRight(node);
+    //         } else {
+    //             this->insert(this->root->getRight(), node);
+    //         }
+    //     }
+    //     if (this->root->d > node->d) {
+    //         if (this->root->getLeft() == nullptr) {
+    //             this->root->setLeft(node);
+    //         } else {
+    //             this->insert(this->root->getLeft(), node);
+    //         }
+    //     }
+    // }
 
     void print(const string &prefix, Node *node, bool isLeft) {
         if (node != nullptr) {
@@ -222,18 +225,8 @@ class GrammTree {
         symPrint(this->root);
     }
 
-    bool levelMonotony(Node *node) {
-        if (!node->getLeft() && !node->getRight()) return true;
-        if ((bool)node->getLeft() != (bool)node->getRight()) return false;
-        return levelMonotony(node->getLeft()) && levelMonotony(node->getRight());
-    }
-
-    bool levelMonotony() {
-        return this->levelMonotony(this->root);
-    }
-
     void insertSymb(Node *node) {
-        cout << node->d << endl;
+        // cout << node->d << endl;
         if (node->d.length() <= 1) return;
         Node *l = new Node(node->d.substr(0, 1));
         Node *r = new Node(node->d.substr(1, 100));
@@ -241,7 +234,32 @@ class GrammTree {
         insertSymb(l);
         node->setRight(r);
         insertSymb(r);
-        cout << node->getLeft() << " " << node->getRight() << endl;
+        // cout << node->getLeft() << " " << node->getRight() << endl;
+    }
+
+    unordered_set<string> findCommonFactors(Node *root) {
+        unordered_set<string> commonFactors;
+        if (root->getLeft() == nullptr && root->getRight() == nullptr) {
+            commonFactors.insert(root->d);
+            return commonFactors;
+        }
+
+        unordered_set<string> leftFactors = findCommonFactors(root->getLeft());
+        unordered_set<string> rightFactors = findCommonFactors(root->getRight());
+
+        for (string factor : leftFactors) {
+            if (rightFactors.count(factor)) {
+                commonFactors.insert(factor);
+            }
+            cout << factor << " ";
+        }
+        cout << endl;
+
+        return commonFactors;
+    }
+
+    unordered_set<string> findCommonFactors() {
+        return findCommonFactors(this->root);
     }
 
     void parseEq() {
@@ -259,10 +277,12 @@ class GrammTree {
             else
                 l += this->root->d[i];
         }
-        cout << l << ' ' << r << endl;
+        // cout << l << ' ' << r << endl;
         Node *left = new Node(l);
+        this->root->setLeft(left);
         insertSymb(left);
         Node *right = new Node(r);
+        this->root->setRight(right);
         insertSymb(right);
     }
 
@@ -278,8 +298,41 @@ class GrammTree {
     }
 };
 
-
 int main() {
-    GrammTree *tree = new GrammTree("2ax+7ay");
-    tree->print();
+    // GrammTree *tree = new GrammTree("2ax+7ay");
+    // tree->print();
+    // unordered_set<string> res = tree->findCommonFactors();
+    // for (string item : res) {
+    //     cout << "main " << item << ' ';
+    // }
+    // cout << endl;
+    // cout << "end\n";
+    string eq;
+    cin >> eq;
+    cout << "sd" << endl;
+    unordered_set<char> left;
+    unordered_set<char> right;
+    bool flag = false;
+    for (int i = 0; i<eq.length(); ++i) {
+        if (eq[i] == '+') flag = true;
+        else if (flag) right.insert(eq[i]);
+        else left.insert(eq[i]);
+    }
+
+    unordered_set<char> commonFactors;
+    for (char item : left) {
+        if (right.count(item)) {
+            commonFactors.insert(item);
+            right.erase(item);
+            left.erase(item);
+        }
+    }
+    for (char it : left) cout << it << ' ';
+    cout << endl;
+
+    for (char it : right) cout << it << ' ';
+    cout << endl;
+
+    for (char it : commonFactors) cout << it << ' ';
+    cout << endl;
 }
