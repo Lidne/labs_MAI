@@ -69,10 +69,12 @@ class GrammTree {
   void print() { print("", this->root, false); }
 
   Node *deleteNode(Node *root, string d) {
+    // пустой указатель или лист не с нужным значением
     if (root == nullptr || (root->getLeft() == nullptr &&
                             root->getRight() == nullptr && root->d != d))
       return nullptr;
 
+    // если у узла один ребенок
     if (root->getLeft() == nullptr && root->getRight() != nullptr) {
       if (root->getRight()->d == d) {
         delete root->getRight();
@@ -91,10 +93,13 @@ class GrammTree {
       }
       return deleteNode(root->getLeft(), d);
     }
+
+    // удаление листа через родителя (левая ветвь)
     if (root->getLeft() != nullptr && root->getLeft()->getLeft() == nullptr &&
         root->getLeft()->getRight() == nullptr && root->getLeft()->d == d) {
       delete root->getLeft();
       root->setLeft(nullptr);
+      // правая ветвь
       if (root->getRight() != nullptr &&
           root->getRight()->getLeft() == nullptr &&
           root->getRight()->getRight() == nullptr && root->getRight()->d == d) {
@@ -104,10 +109,12 @@ class GrammTree {
       return new Node(d);
     }
 
+    // удаление листа через родителя (правая ветвь)
     if (root->getRight() != nullptr && root->getRight()->getLeft() == nullptr &&
         root->getRight()->getRight() == nullptr && root->getRight()->d == d) {
       delete root->getRight();
       root->setRight(nullptr);
+      // левая ветвь
       if (root->getLeft() != nullptr && root->getLeft()->getLeft() == nullptr &&
           root->getLeft()->getRight() == nullptr && root->getLeft()->d == d) {
         delete root->getLeft();
@@ -115,7 +122,8 @@ class GrammTree {
       }
       return new Node(d);
     }
-
+    
+    // рекурсивное удаление
     Node *left = deleteNode(root->getLeft(), d);
     if (left != nullptr) return left;
 
@@ -127,7 +135,7 @@ class GrammTree {
 
   Node *deleteNode(string d) { return deleteNode(this->root, d); }
 
-  void symPrint(Node *node) {
+  void symPrint(Node *node) { // вывод в строку
     if (node == nullptr) return;
     symPrint(node->getLeft());
     if (node->getLeft() == nullptr && node->getRight() == nullptr)
@@ -137,7 +145,7 @@ class GrammTree {
 
   void symPrint() { symPrint(this->root); }
 
-  void insertSymb(Node *node) {
+  void insertSymb(Node *node) { // вставка узла
     if (node->d.length() <= 1) return;
     Node *l = new Node(node->d.substr(0, 1));
     Node *r = new Node(node->d.substr(1, 100));
@@ -147,13 +155,14 @@ class GrammTree {
     insertSymb(r);
   }
 
-  void parseEq() {
+  void parseEq() { // парсинг выражения
     if (this->root->d.empty()) {
       cout << "empty string" << endl;
       return;
     }
     string l = "", r = "";
     bool flag = false;
+    // разбивка на 2 части (до + и после)
     for (int i = 0; i < this->root->d.length(); ++i) {
       if (this->root->d[i] == '+')
         flag = true;
@@ -188,18 +197,20 @@ class GrammTree {
            commonFactors(root->getRight(), res);
   }
 
-  void commonFactors() {
+  void commonFactors() { // нахождение общих множителей
     if (this->root->getLeft() == nullptr && this->root->getRight() == nullptr) {
       cout << this->root->d;
       return;
     }
+    // слева от корня лист
     bool l = (this->root->getLeft()->getLeft() == nullptr &&
               this->root->getLeft()->getRight() == nullptr);
+    // справа от корня лист
     bool r = (this->root->getRight()->getLeft() == nullptr &&
               this->root->getRight()->getRight() == nullptr);
     string s = "";
     if (l || r) {
-      if (this->root->getLeft()->d == this->root->getRight()->d) {
+      if (this->root->getLeft()->d == this->root->getRight()->d) { // если у корня 2 одинаковых ребенка
         s = "2(" + this->root->getLeft()->d + ")\n";
         cout << s;
         delete this->root->getLeft();
@@ -209,7 +220,7 @@ class GrammTree {
         this->root->d = s;
         return;
       }
-      if (l) {
+      if (l) { // удаление если слева лист
         Node *node =
             deleteNode(this->root->getRight(), this->root->getLeft()->d);
         if (node != nullptr) {
@@ -217,7 +228,7 @@ class GrammTree {
           this->root->getLeft()->d = "1";
         }
       }
-      if (r) {
+      if (r) { // удаление если справа лист
         Node *node =
             deleteNode(this->root->getLeft(), this->root->getRight()->d);
         if (node != nullptr) {
@@ -226,20 +237,13 @@ class GrammTree {
         }
       }
 
-    } else
+    } else // выборка если все нормально
       s = commonFactors(this->root->getLeft(), "");
     cout << "result: " << s << "(";
     symPrint(this->root->getLeft());
     cout << " + ";
     symPrint(this->root->getRight());
     cout << ")\n";
-
-    // string b = commonFactors(this->root->getRight(), "");
-    // cout << "result: " << b << "(";
-    // symPrint(this->root->getLeft());
-    // cout << " + ";
-    // symPrint(this->root->getRight());
-    // cout << ")\n";
   }
 
   GrammTree(Node *root) {

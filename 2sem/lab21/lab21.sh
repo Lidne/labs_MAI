@@ -1,15 +1,16 @@
 #!/bin/bash
-
-# Завершает программу если не указано нужное количество аргументов
-if [ $# -lt 2 ]; then
-    echo "Usage: <script> <in> <n>"
-    exit 1
-fi
-
+# Usage: lab21.sh <in> <n> <size>
 in=$1
-size=$2
-in_size=$(wc -c $in | awk '{print $1}')
-let "n=$size/$in_size"
+n=$2
+size=$3
+in_size=$( stat -f "%z" $in)
+let "n2=$size/$in_size"
+if (($n2 > $n))
+then
+    nn=$n
+else
+    nn=$n2
+fi
 out="concatenated_file.txt"
 
 # Проверяет существует ли файл
@@ -19,10 +20,10 @@ if [ ! -f $in ]; then
 fi
 
 # Выполняем конкатенацию файла
-for ((i=1; i<=$n; i++)); do
+for ((i=1; i<=$nn; i++)); do
     cat $in >> $out
 done
 
 echo ""
-echo "Выполнил конкатенацию $in $n раз.
+echo "Выполнил конкатенацию $in $nn раз.
 Результат записан в $out"
