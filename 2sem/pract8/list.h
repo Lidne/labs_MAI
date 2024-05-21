@@ -1,6 +1,5 @@
 #ifndef LIST_D
 #define LIST_D
-#include <iostream>
 
 class Node {
  public:

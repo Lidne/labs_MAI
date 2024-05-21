@@ -1,0 +1,8 @@
+Nikolaev        6       AMDRyzen3     16      NVIDIAGTX1050  4       HDD             2       2048    5       Ubuntu          
+Melnikov        2       AMDRyzen5     8       RadeonRX5500   8       HDD             2       1024    4       Arch            
+Vasilev         8       AMDRyzen7     24      NVIDIAGTX1650  6       SSD             4       3072    3       Windows         
+Alekseev        2       IntelI7        24     NVIDIAGTX1050  4       SSD             1       2560    6       Fedora          
+Popov           8       AMDRyzen3     8       RadeonRX7500   12      SSD             4       512     6       Ubuntu          
+Petrov          10      IntelI3        24     RadeonRX5500   8       SSD             4       512     4       Windows         
+Nikolaev        10      IntelI3        16     RadeonRX450    4       HDD             4       3584    6       Fedora          
+Petrov          2       IntelI3        24     RadeonRX5500   8       SSD             1       2560    6       Windows
